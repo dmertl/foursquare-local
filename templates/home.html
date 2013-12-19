@@ -1,0 +1,9 @@
+{% extends "layout.html" %}
+{% block body %}
+    <h2>Home</h2>
+    {% if not session.user %}
+        <a href="{{ auth_url }}">Authorize with Foursquare</a>
+    {% else %}
+        <a href="{{ url_for('download_checkins') }}">Download Checkins</a>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,15 @@
+# Foursquare Local Configuration
+
+# Debug
+DEBUG = True
+
+# Path to SQLite database file
+DATABASE = 'app.db'
+
+# Secret key
+SECRET_KEY = 'jkladfs j290jrq20jn aodisfn as0fn20naoun 0awfn0 ajf80923hf8n2fu'
+
+# Foursquare API settings
+FOURSQUARE_API_CLIENT_ID = ''
+FOURSQUARE_API_SECRET = ''
+FOURSQUARE_API_REDIRECT_URI = ''
