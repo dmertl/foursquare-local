@@ -5,6 +5,7 @@ from flask import Flask, request, session, g, redirect, url_for, abort, render_t
 from contextlib import closing
 from pprint import pprint, pformat
 from urllib import urlencode
+import foursquare
 
 app = Flask(__name__)
 app.config.from_pyfile('config.py')
@@ -23,7 +24,9 @@ def init_db():
 
 @app.before_request
 def before_request():
+    # Initialize database
     g.db = connect_db()
+    g.db.row_factory = make_dicts
 
 
 @app.teardown_request
@@ -48,7 +51,16 @@ def home():
 
 @app.route('/download_checkins')
 def download_checkins():
-    return render_template('download_checkins.html')
+    if session['user']:
+        client = foursquare.Foursquare(client_id=app.config['FOURSQUARE_API_CLIENT_ID'],
+                                       client_secret=app.config['FOURSQUARE_API_SECRET'],
+                                       redirect_uri=app.config['FOURSQUARE_API_REDIRECT_URI'])
+        client.set_access_token(session['user']['access_token'])
+        checkins = client.users.checkins()
+        return pformat(checkins)
+        return render_template('download_checkins.html')
+    else:
+        abort(401)
 
 
 @app.route('/masquerade')
@@ -75,7 +87,6 @@ def query_db(query, args=(), one=False):
     rv = cur.fetchall()
     cur.close()
     return (rv[0] if rv else None) if one else rv
-
 
 if __name__ == '__main__':
     import argparse
