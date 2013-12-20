@@ -51,6 +51,7 @@ def home():
 
 @app.route('/download_checkins')
 def download_checkins():
+    #JQE0TMHVGYL2DMVPLY0Q5V0QLBXOV2R5OTZOGIUDX0LOQZ1B
     if session['user']:
         client = foursquare.Foursquare(client_id=app.config['FOURSQUARE_API_CLIENT_ID'],
                                        client_secret=app.config['FOURSQUARE_API_SECRET'],
