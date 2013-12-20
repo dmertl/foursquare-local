@@ -4,7 +4,7 @@ import sqlite3
 from flask import Flask, request, session, g, redirect, url_for, abort, render_template, flash
 from contextlib import closing
 from pprint import pprint, pformat
-from urllib import urlencode
+
 import foursquare
 
 app = Flask(__name__)
@@ -36,48 +36,6 @@ def teardown_request(exception):
         db.close()
 
 
-@app.route('/')
-def home():
-    auth_endpoint = 'https://foursquare.com/oauth2/authenticate'
-    auth_params = {
-        'client_id': app.config['FOURSQUARE_API_CLIENT_ID'],
-        'response_type': 'token',
-        'redirect_uri': app.config['FOURSQUARE_API_REDIRECT_URI']
-    }
-    auth_url = auth_endpoint + '?' + urlencode(auth_params)
-
-    return render_template('home.html', auth_url=auth_url)
-
-
-@app.route('/download_checkins')
-def download_checkins():
-    #JQE0TMHVGYL2DMVPLY0Q5V0QLBXOV2R5OTZOGIUDX0LOQZ1B
-    if session['user']:
-        client = foursquare.Foursquare(client_id=app.config['FOURSQUARE_API_CLIENT_ID'],
-                                       client_secret=app.config['FOURSQUARE_API_SECRET'],
-                                       redirect_uri=app.config['FOURSQUARE_API_REDIRECT_URI'])
-        client.set_access_token(session['user']['access_token'])
-        checkins = client.users.checkins()
-        return pformat(checkins)
-        return render_template('download_checkins.html')
-    else:
-        abort(401)
-
-
-@app.route('/masquerade')
-def masquerade():
-    if request.args['user_id']:
-        user = query_db('SELECT * FROM users WHERE id = ?', [request.args['user_id']], True)
-        if user:
-            session['user'] = user
-            flash('Masquerading as user {0}'.format(user['id']))
-            return render_template('masquerade.html')
-        else:
-            raise Exception('User does not exist')
-    else:
-        raise Exception('Must provide a user id')
-
-
 def make_dicts(cursor, row):
     return dict((cursor.description[idx][0], value)
                 for idx, value in enumerate(row))
@@ -88,6 +46,8 @@ def query_db(query, args=(), one=False):
     rv = cur.fetchall()
     cur.close()
     return (rv[0] if rv else None) if one else rv
+
+import foursquarelocal.views
 
 if __name__ == '__main__':
     import argparse
