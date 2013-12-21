@@ -3,8 +3,9 @@ __author__ = 'dmertl'
 from urllib import urlencode
 from pprint import pprint, pformat
 import foursquare
+from flask import request, render_template, session, flash, abort
 
-from foursquarelocal import app, request, render_template, session, flash, abort
+from foursquarelocal import app
 
 
 @app.route('/')
