@@ -1,8 +1,17 @@
 {% extends "layout.html" %}
 {% block body %}
     <h2>Home</h2>
+    <br />
     {% if not session.user %}
-        <a href="{{ auth_url }}">Authorize with Foursquare</a>
+        <a href="{{ auth_url }}">Authorize with Foursquare</a><br />
+        <br />
+        or<br />
+        <br />
+        <form method="post" action="{{ url_for('access_token_login') }}">
+            <label for="debug-auth-token">Debug with access token</label>
+            <input type="text" name="access_token" placeholder="JQE0TMHV..." id="debug-auth-token" />
+            <button type="submit" name="submit">Submit</button>
+        </form>
     {% else %}
         <a href="{{ url_for('download_checkins') }}">Download Checkins</a>
     {% endif %}

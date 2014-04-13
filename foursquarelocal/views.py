@@ -3,9 +3,10 @@ __author__ = 'dmertl'
 from urllib import urlencode
 from pprint import pprint, pformat
 import foursquare
-from flask import request, render_template, session, flash, abort
+from flask import request, render_template, session, flash, abort, redirect, url_for
+import auth
 
-from foursquarelocal import app
+from foursquarelocal import app, get_client
 
 
 @app.route('/')
@@ -23,12 +24,8 @@ def home():
 
 @app.route('/download_checkins')
 def download_checkins():
-    #JQE0TMHVGYL2DMVPLY0Q5V0QLBXOV2R5OTZOGIUDX0LOQZ1B
     if session['user']:
-        client = foursquare.Foursquare(client_id=app.config['FOURSQUARE_API_CLIENT_ID'],
-                                       client_secret=app.config['FOURSQUARE_API_SECRET'],
-                                       redirect_uri=app.config['FOURSQUARE_API_REDIRECT_URI'])
-        client.set_access_token(session['user']['access_token'])
+        client = get_client()
         checkins = client.users.checkins()
         return pformat(checkins)
         return render_template('download_checkins.html')
@@ -36,15 +33,17 @@ def download_checkins():
         abort(401)
 
 
-@app.route('/masquerade')
-def masquerade():
-    if request.args['user_id']:
-        user = query_db('SELECT * FROM users WHERE id = ?', [request.args['user_id']], True)
-        if user:
-            session['user'] = user
-            flash('Masquerading as user {0}'.format(user['id']))
-            return render_template('masquerade.html')
-        else:
-            raise Exception('User does not exist')
+@app.route('/access_token_login', methods=['POST'])
+def access_token_login():
+    """
+    Debugging method for inputting an access token directly rather than going through authorization process.
+    Can generate access token by making queries to API in browser. See Foursquare auth documentation.
+    """
+    if request.form['access_token']:
+        auth.login(request.form['access_token'])
+        return redirect(url_for('home'))
     else:
-        raise Exception('Must provide a user id')
+        raise Exception('No access token provided')
+
+
+
