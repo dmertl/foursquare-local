@@ -9,6 +9,11 @@ from foursquarelocal import get_client
 
 
 def user():
+    """
+
+    :return:
+    :rtype: models.User
+    """
     if 'user' in flask.session:
         return models.User.query.filter_by(id=flask.session['user']['id']).first()
     else:

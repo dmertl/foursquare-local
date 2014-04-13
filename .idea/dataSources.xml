@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourceManagerImpl" format="xml" hash="3214161904">
+    <data-source source="LOCAL" name="app" uuid="adb8d76e-3537-4f56-a1cb-ca8fd6b62b95">
+      <driver-ref>sqlite.xerial</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
+      <jdbc-url>jdbc:sqlite:$PROJECT_DIR$/foursquarelocal/app.db</jdbc-url>
+      <schema-pattern>*</schema-pattern>
+      <libraries />
+    </data-source>
+  </component>
+</project>
+

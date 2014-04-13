@@ -5,7 +5,7 @@ from pprint import pprint, pformat
 import foursquare
 from flask import request, render_template, session, flash, abort, redirect, url_for
 import auth
-
+import sync
 from foursquarelocal import app, get_client
 
 
@@ -25,9 +25,7 @@ def home():
 @app.route('/download_checkins')
 def download_checkins():
     if session['user']:
-        client = get_client()
-        checkins = client.users.checkins()
-        return pformat(checkins)
+        sync.sync()
         return render_template('download_checkins.html')
     else:
         abort(401)

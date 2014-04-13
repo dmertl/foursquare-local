@@ -2,6 +2,7 @@ __author__ = 'dmertl'
 
 from sqlalchemy import Column, Integer, String, DateTime, Float, Boolean, Table, ForeignKey
 from sqlalchemy.orm import relationship
+import datetime
 
 from foursquarelocal.database import Base
 
@@ -56,6 +57,16 @@ class Venue(Base):
     def __repr__(self):
         return '<Venue {0}>'.format(self.name)
 
+    @classmethod
+    def from_foursquare(cls, fsq_venue):
+        venue = Venue()
+        venue.id = fsq_venue['id']
+        venue.name = fsq_venue['name']
+        for field in ['address', 'cc', 'city', 'country', 'corssStreet', 'lat', 'lon', 'postalCode', 'state']:
+            if field in fsq_venue['location']:
+                setattr(venue, 'location_{0}'.format(field), fsq_venue['location'][field])
+        return venue
+
 
 class Category(Base):
     __tablename__ = 'categories'
@@ -70,6 +81,16 @@ class Category(Base):
     def __repr__(self):
         return '<Category {0}>'.format(self.name)
 
+    @classmethod
+    def from_foursquare(cls, fsq_category):
+        category = Category()
+        category.id = fsq_category['id']
+        category.name = fsq_category['name']
+        category.pluralName = fsq_category['pluralName']
+        category.primary = fsq_category['primary']
+        category.shortName = fsq_category['shortName']
+        return category
+
 
 class Checkin(Base):
     __tablename__ = 'checkins'
@@ -81,3 +102,15 @@ class Checkin(Base):
 
     def __repr__(self):
         return '<Checkin {0}>'.format(self.id)
+
+    @classmethod
+    def from_foursquare(cls, fsq_checkin, user_id=None):
+        checkin = Checkin()
+        checkin.id = fsq_checkin['id']
+        checkin.createdAt = datetime.datetime.fromtimestamp(fsq_checkin['createdAt'])
+        if user_id:
+            checkin.user_id = user_id
+        elif 'user' in fsq_checkin:
+            checkin.user_id = fsq_checkin['user']['id']
+        checkin.venue_id = fsq_checkin['venue']['id']
+        return checkin

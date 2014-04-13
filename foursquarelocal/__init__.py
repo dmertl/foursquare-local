@@ -29,7 +29,7 @@ def get_client(access_token=None):
     if access_token:
         client.set_access_token(access_token)
     elif 'user' in session:
-        client.set_access_token(session['user'].access_token)
+        client.set_access_token(session['user']['access_token'])
     return client
 
 import foursquarelocal.views
